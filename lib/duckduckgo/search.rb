@@ -25,7 +25,7 @@ module DuckDuckGo
 
     document = Nokogiri::HTML(html)
 
-    document.css('#links').each do |result|
+    document.css('#links .result').each do |result|
       title_element = result.css('.result__a').first
       raise 'Could not find result link element!' if title_element.nil?
 
