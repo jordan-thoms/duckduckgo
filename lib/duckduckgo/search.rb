@@ -1,7 +1,6 @@
 require 'nokogiri'
 require 'open-uri'
 require 'open_uri_redirections'
-require 'cgi'
 
 ##
 # The DuckDuckGo module.
@@ -21,7 +20,7 @@ module DuckDuckGo
     results = []
 
     raise 'Hash does not contain a query string.' if hash[:query].nil?
-    html = open("#{RESOURCE_URL}#{CGI::escape(hash[:query])}")
+    html = open("#{RESOURCE_URL}#{URI.encode(hash[:query])}")
 
     document = Nokogiri::HTML(html)
 
