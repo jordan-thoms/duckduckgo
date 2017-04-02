@@ -32,8 +32,9 @@ module DuckDuckGo
       title = title_element.text
       raise 'Could not find result title!' if title.nil?
 
-      uri = title_element['href']
+      uri = title_element['href']&.gsub(/\/l\/\?kh=-1&uddg=/, '')
       raise 'Could not find result URL!' if uri.nil?
+      uri = URI.decode(uri || '')
 
       # Attempt to follow redirects, since DuckDuckGo often aggregates search results from Yahoo.
       begin
