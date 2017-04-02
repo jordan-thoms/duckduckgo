@@ -26,7 +26,7 @@ module DuckDuckGo
     document = Nokogiri::HTML(html)
 
     if hash[:limit].present?
-      document_results = document.css('#links .result').first(hash[:limit])
+      document_results = document.css('#links .result').first(hash[:limit]).compact
     else
       document_results = document.css('#links .result')
     end
