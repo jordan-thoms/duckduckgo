@@ -20,7 +20,17 @@ module DuckDuckGo
     results = []
 
     raise 'Hash does not contain a query string.' if hash[:query].nil?
-    html = open("#{RESOURCE_URL}#{URI.encode(hash[:query])}")
+    begin
+      html = open("#{RESOURCE_URL}#{URI.encode(hash[:query])}")
+    rescue OpenURI::HTTPError => e
+      response = e.io
+      p response.status
+      if response.status.first == 403
+        raise "Likely too many connections 403 forbidden"
+      else
+        raise
+      end
+    end
 
     document = Nokogiri::HTML(html)
 
