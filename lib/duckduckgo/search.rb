@@ -34,11 +34,7 @@ module DuckDuckGo
 
     document = Nokogiri::HTML(html)
 
-    if hash[:limit].present?
-      document_results = document.css('#links .result').first(hash[:limit]).compact
-    else
-      document_results = document.css('#links .result')
-    end
+    document_results = document.css('#links .result')
 
     document_results.each do |result|
       title_element = result.css('.result__a').first
@@ -51,20 +47,35 @@ module DuckDuckGo
       raise 'Could not find result URL!' if uri.nil?
       uri = URI.decode(uri || '')
 
-      # Attempt to follow redirects, since DuckDuckGo often aggregates search results from Yahoo.
-      begin
-        final_uri = open(uri, :allow_redirections => :all, :read_timeout => 5).base_uri.to_s
-      rescue
-        final_uri = uri
-      end
-
       description_element = result.css('.result__snippet').first
       raise 'Could not find result description element!' if description_element.nil?
 
       description = description_element.text
       raise 'Could not find result description!' if description.nil?
 
-      results << SearchResult.new(final_uri, title, description)
+      results << SearchResult.new(uri, title, description)
+    end
+
+    # Yield block to run a custom filter before putting it through the
+    # expensive redirection lookup
+    if block_given?
+      results = results.select do |result|
+        yield result
+      end
+    end
+
+    # Limit results
+    if hash[:limit].present?
+      results = results.first(hash[:limit]).compact
+    end
+
+    results.each do |result|
+      # Attempt to follow redirects, since DuckDuckGo often aggregates search results from Yahoo.
+      begin
+        final_uri = open(result.uri, :allow_redirections => :all, :read_timeout => 5).base_uri.to_s
+        result.uri = final_uri
+      rescue
+      end
     end
 
     return results
