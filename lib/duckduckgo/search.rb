@@ -21,7 +21,7 @@ module DuckDuckGo
 
     raise 'Hash does not contain a query string.' if hash[:query].nil?
     begin
-      html = open("#{RESOURCE_URL}#{URI.encode(hash[:query])}")
+      html = open("#{RESOURCE_URL}#{CGI.escape(hash[:query])}")
     rescue OpenURI::HTTPError => e
       response = e.io
       p response.status
@@ -42,6 +42,8 @@ module DuckDuckGo
 
       title = title_element.text
       raise 'Could not find result title!' if title.nil?
+
+      break if title.squish == "No results."
 
       uri = title_element['href']&.gsub(/\/l\/\?kh=-1&uddg=/, '')
       raise 'Could not find result URL!' if uri.nil?
