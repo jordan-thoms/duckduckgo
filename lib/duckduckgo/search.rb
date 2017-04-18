@@ -49,10 +49,10 @@ module DuckDuckGo
       uri = URI.decode(uri || '')
 
       description_element = result.css('.result__snippet').first
-      raise 'Could not find result description element!' if description_element.nil?
-
-      description = description_element.text
-      raise 'Could not find result description!' if description.nil?
+      if description_element.present?
+        description = description_element.text
+        raise 'Could not find result description!' if description.nil?
+      end
 
       results << SearchResult.new(uri, title, description)
     end
