@@ -24,9 +24,8 @@ module DuckDuckGo
       html = open("#{RESOURCE_URL}#{CGI.escape(hash[:query])}")
     rescue OpenURI::HTTPError => e
       response = e.io
-      p response.status
-      if response.status.first == 403
-        raise "Likely too many connections 403 forbidden"
+      if response.status&.first&.to_i == 403
+        raise "Likely too many connections, thrown 403 forbidden error"
       else
         raise
       end
