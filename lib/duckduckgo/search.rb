@@ -35,6 +35,9 @@ module DuckDuckGo
 
     document_results = document.css('#links .result')
 
+    # Limit results before running through the filter
+    document_results = document_results.first(hash[:pre_filter_limit]).compact if hash[:pre_filter_limit].present?
+
     document_results.each do |result|
       title_element = result.css('.result__a').first
       raise 'Could not find result link element!' if title_element.nil?
