@@ -76,6 +76,9 @@ module DuckDuckGo
     results.each do |result|
       # Attempt to follow redirects, since DuckDuckGo often aggregates search results from Yahoo.
       begin
+        # Avoid downloading PDFs, it takes a while
+        next if result.uri =~ /\.pdf$/
+
         final_uri = open(result.uri, :allow_redirections => :all, :read_timeout => 5).base_uri.to_s
         result.uri = final_uri
       rescue
