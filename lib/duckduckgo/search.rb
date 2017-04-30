@@ -40,6 +40,7 @@ module DuckDuckGo
 
     document_results.each do |result|
       title_element = result.css('.result__a').first
+      title_element.css('.result__type').remove # Remove the file type from the title e.g. PDFs
       raise 'Could not find result link element!' if title_element.nil?
 
       title = title_element.text
