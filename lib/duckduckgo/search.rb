@@ -21,7 +21,7 @@ module DuckDuckGo
 
     raise 'Hash does not contain a query string.' if hash[:query].nil?
     begin
-      html = open("#{RESOURCE_URL}#{CGI.escape(hash[:query])}")
+      html = open("#{RESOURCE_URL}#{CGI.escape(hash[:query])}", 'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36')
     rescue OpenURI::HTTPError => e
       response = e.io
       if response.status&.first&.to_i == 403
